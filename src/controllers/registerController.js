@@ -27,8 +27,6 @@ const handleNewUser = async (req, res) => {
 
         // Save the user instance to the database
         await user.save();
-
-        console.log(user);
     
         res.status(201).json({ success: `New user ${name} created!` });
       } catch (err) {

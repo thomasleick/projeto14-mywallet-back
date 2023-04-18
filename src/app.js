@@ -13,7 +13,7 @@ app.use(express.json());
 
 // ROTAS
 app.use('/register', require('./routes/register'));
-//app.use('/login', require('./routes/login'));
+app.use('/login', require('./routes/login'));
 //app.use('/refresh', require('./routes/refresh'))
 
 //app.use(verifyJWT)
