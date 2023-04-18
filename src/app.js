@@ -1,5 +1,6 @@
 require('dotenv').config();
 const express = require('express');
+const verifyJWT = require('./middleware/verifyJWT')
 const mongoose = require('mongoose');
 const connectDB = require('./config/dbConn');
 
@@ -11,6 +12,13 @@ connectDB();
 app.use(express.json());
 
 // ROTAS
+app.use('/register', require('./routes/register'));
+app.use('/login', require('./routes/login'));
+app.use('/refresh', require('./routes/refresh'))
+
+app.use(verifyJWT)
+app.use('/transaction', require('./routes/transaction'));
+app.use('/home', require('./routes/home'));
 
 
 // Start
