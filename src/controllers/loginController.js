@@ -5,7 +5,15 @@ const jwt = require('jsonwebtoken')
 const handleLogin = async (req, res) => {
 
     const { email, pwd } = req.body
-    if (!email || !pwd) return res.status(400).json({'message': 'Email and password are required.'})
+
+    // Validate email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!email || !emailRegex.test(email)) {
+        return res.status(400).json({'message': 'A valid email is required.'})
+    }
+    if (!pwd) {
+        return res.status(400).json({'message': 'Password is required.'})
+    }
 
        const foundUser = await User.findOne({ email }).exec()
     if (!foundUser) return res.sendStatus(404) //unauthorized
