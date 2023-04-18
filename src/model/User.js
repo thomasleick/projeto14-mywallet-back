@@ -8,11 +8,14 @@ const userSchema = new Schema({
     },
     email: {
         type: String,
-        required: true
-    },
-    pwd: {
+        required: true,
+        unique: true,
+        match: /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/
+      },
+      pwd: {
         type: String,
-        required: true
+        required: true,
+        minlength: 3
     },
     refreshToken: String
 })
