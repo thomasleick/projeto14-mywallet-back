@@ -31,6 +31,18 @@ const postTransaction = async (req, res) => {
     }
 }
 
-const getTransaction = async (req, res) => { return res.sendStatus(200) }
+const getTransaction = async (req, res) => {
+    const userId = req?.headers?.id;
+
+    if (!userId) return res.sendStatus(400)
+
+    try {
+      const transactions = await Transaction.find({ userId }); // find all transactions with the given userId
+      return res.json(transactions); // return the transactions
+    } catch (err) {
+      console.error(err);
+      return res.sendStatus(500);
+    }
+  };
 
 module.exports = { postTransaction, getTransaction };

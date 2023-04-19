@@ -23,7 +23,6 @@ app.use('/refresh', require('./routes/refresh'))
 
 app.use(verifyJWT)
 app.use('/transaction', require('./routes/transaction'));
-//app.use('/home', require('./routes/home'));
 
 
 // Start
