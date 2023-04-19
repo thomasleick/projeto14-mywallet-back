@@ -3,7 +3,6 @@ const jwt = require('jsonwebtoken')
 
 const handleRefreshToken = async (req, res) => {
     const cookies = req.cookies
-    //console.log(cookies)
     if (!cookies?.jwt) return res.sendStatus(401)
     const refreshToken = cookies.jwt
 
@@ -14,19 +13,19 @@ const handleRefreshToken = async (req, res) => {
         refreshToken,
         process.env.REFRESH_TOKEN_SECRET,
         (err, decoded) => {
-            if (err || foundUser.username !== decoded.username) return res.sendStatus(403)
-            const roles = Object.values(foundUser.roles)
+            if (err || foundUser._id.toString() !== decoded.id) return res.sendStatus(403)
             const accessToken = jwt.sign(
                 { 
                     "UserInfo": {
-                        "username": decoded.username,
-                        "roles": roles
+                        "name": decoded.name,
+                        "email": decoded.email,
+                        "id": decoded._id
                     }
                 },
                 process.env.ACCESS_TOKEN_SECRET,
                 { expiresIn: '10s'}
             )
-            res.json({ roles, accessToken })
+            res.json({ accessToken })
         }
     )
 }
