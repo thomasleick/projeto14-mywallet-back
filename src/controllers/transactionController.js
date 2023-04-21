@@ -5,10 +5,11 @@ const postTransaction = async (req, res) => {
     const { type } = req?.params;
     const { value, description } = req?.body;
     const { userid } = req?.headers;
+    const date = new Date();
 
     try {
         // Validate input data against the User schema
-        const transaction = new Transaction({ userId: userid, value, type, description });
+        const transaction = new Transaction({ userId: userid, value, type, description, date });
         const validationResult = transaction.validateSync();
     
         if (validationResult) {
