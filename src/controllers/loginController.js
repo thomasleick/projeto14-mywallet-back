@@ -1,4 +1,4 @@
-const authService = require('../services/authService')
+const loginService = require('../services/loginService')
 
 const handleLogin = async (req, res) => {
   const { email, pwd } = req.body
@@ -10,14 +10,14 @@ const handleLogin = async (req, res) => {
   if (!pwd) {
     return res.status(400).json({'message': 'Password is required.'})
   }
-  const foundUser = await authService.findUserByEmail(email)
+  const foundUser = await loginService.findUserByEmail(email)
   if (!foundUser) {
     return res.sendStatus(404) //unauthorized
   }
-  const match = await authService.comparePassword(pwd, foundUser.pwd)
+  const match = await loginService.comparePassword(pwd, foundUser.pwd)
   if (match) {
-    const { accessToken, refreshToken } = authService.generateTokens(foundUser)
-    await authService.saveRefreshToken(foundUser._id, refreshToken)
+    const { accessToken, refreshToken } = loginService.generateTokens(foundUser)
+    await loginService.saveRefreshToken(foundUser._id, refreshToken)
 
     res.cookie('jwt', refreshToken, { httpOnly: true, secure: true, sameSite: 'None', maxAge: 24 * 60 * 60 * 1000 })
 
