@@ -39,8 +39,7 @@ app.use(verifyJWT)
 app.use('/transaction', require('./routes/transaction'));
 
 // Start
-const PORT = 5000;
 mongoose.connection.once('open', () => {
   console.log('Connected to MongoDB');
-  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+  app.listen(process.env.PORT, () => console.log(`Server running on port ${process.env.PORT}`));
 });

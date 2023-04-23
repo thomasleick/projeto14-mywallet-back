@@ -4,7 +4,7 @@ const User = require('../models/User')
 const postTransaction = async (req, res) => {
   const { type } = req?.params;
   const { value, description } = req?.body;
-  const { userid } = req?.headers;
+  const userid = req?.headers?.id;
   const date = new Date();
 
   try {
@@ -37,8 +37,8 @@ const getTransaction = async (req, res) => {
 
   if (!userId) return res.sendStatus(400)
   try {
-    const transactions = await Transaction.find({ userId }); // find all transactions with the given userId
-    return res.json(transactions); // return the transactions
+    const transactions = await Transaction.find({ userId });
+    return res.json(transactions); 
   } catch (err) {
     console.error(err);
     return res.sendStatus(500);

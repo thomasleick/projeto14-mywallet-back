@@ -21,7 +21,7 @@ const handleLogin = async (req, res) => {
 
     res.cookie('jwt', refreshToken, { httpOnly: true, secure: true, sameSite: 'None', maxAge: 24 * 60 * 60 * 1000 })
 
-    console.log(`login the ${foundUser.name} efetuado com sucesso...`)
+    console.log(`login de ${foundUser.name} efetuado com sucesso...`)
 
     return res.json({ name: foundUser.name, email: foundUser.email, id: foundUser._id, accessToken })
 
