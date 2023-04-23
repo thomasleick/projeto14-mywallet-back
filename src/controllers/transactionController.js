@@ -1,3 +1,4 @@
+const { query } = require('express');
 const Transaction = require('../models/Transaction');
 const User = require('../models/User')
 
@@ -35,7 +36,7 @@ const postTransaction = async (req, res) => {
 const getTransaction = async (req, res) => {
   const userId = req?.headers?.id;
 
-  if (!userId) return res.sendStatus(400)
+  if (!userId) return res.sendStatus(400);
   try {
     const transactions = await Transaction.find({ userId });
     return res.json(transactions); 
@@ -45,4 +46,31 @@ const getTransaction = async (req, res) => {
   }
 };
 
-module.exports = { postTransaction, getTransaction };
+const deleteTransaction = async (req, res) => {
+  const userId = req?.headers?.id;
+  const transactionId = req?.params?.id;
+
+  if (!userId || !transactionId) return res.sendStatus(400);
+
+  try {
+    // Check if transaction exists
+    const transaction = await Transaction.findOne({ _id: transactionId, userId });
+    if (!transaction) {
+      return res.status(404).send({ message: 'Transaction not found' });
+    }
+
+    // Delete transaction
+    await Transaction.deleteOne({ _id: transactionId, userId });
+
+    return res.sendStatus(204);
+  } catch (err) {
+    console.error(err);
+    return res.sendStatus(500);
+  }
+};
+
+const putTransaction = async (req, res) => {
+  return
+}
+
+module.exports = { postTransaction, getTransaction, deleteTransaction, putTransaction };
