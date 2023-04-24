@@ -1,4 +1,5 @@
 const loginService = require('../services/loginService')
+const userService = require('../services/userService');
 
 const handleLogin = async (req, res) => {
   const { email, pwd } = req.body
@@ -10,7 +11,7 @@ const handleLogin = async (req, res) => {
   if (!pwd) {
     return res.status(400).json({'message': 'Password is required.'})
   }
-  const foundUser = await loginService.findUserByEmail(email)
+  const foundUser = await userService.findUserByEmail(email)
   if (!foundUser) {
     return res.sendStatus(404) //unauthorized
   }

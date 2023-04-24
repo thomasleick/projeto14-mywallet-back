@@ -2,10 +2,6 @@ const User = require('../models/User')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
-const findUserByEmail = async (email) => {
-  return User.findOne({ email }).exec()
-}
-
 const comparePassword = async (password, hashedPassword) => {
   return bcrypt.compare(password, hashedPassword)
 }
@@ -35,4 +31,4 @@ const saveRefreshToken = async (userId, refreshToken) => {
   return user.save()
 }
 
-module.exports = { findUserByEmail, comparePassword, generateTokens, saveRefreshToken }
+module.exports = { comparePassword, generateTokens, saveRefreshToken }

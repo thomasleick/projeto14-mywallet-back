@@ -1,17 +1,15 @@
-const User = require('../models/User');
-const bcrypt = require('bcrypt');
+const registerService = require('../services/registerService');
+const userService = require('../services/userService');
 
 const handleNewUser = async (req, res) => {
     const { name, email, pwd } = req.body;
     if (!name || !email || !pwd) return res.status(400).json({'message': 'name, email and pwd are required.'});
 
-    // check for duplicate usernames in the db
-    const duplicate = await User.findOne({ email }).exec();
+    const duplicate = await userService.findUserByEmail(email);
     if (duplicate) return res.sendStatus(409); //Conflict
 
     try {
-        // Validate input data against the User schema
-        const user = new User({ name, email, pwd });
+        const user = await registerService.newUser(name, email, pwd);
         const validationResult = user.validateSync();
     
         if (validationResult) {
@@ -19,13 +17,8 @@ const handleNewUser = async (req, res) => {
           return res.status(422).json({ message: errors });
         }
     
-        // Encrypt the password
-        const hashedPwd = await bcrypt.hash(pwd, 10);
-    
-        // Set the hashed password on the user instance
+        const hashedPwd = await registerService.hashPwd(pwd);
         user.pwd = hashedPwd;
-
-        // Save the user instance to the database
         await user.save();
     
         res.status(201).json({ success: `New user ${name} created!` });

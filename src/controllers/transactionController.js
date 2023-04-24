@@ -1,31 +1,14 @@
-const { query } = require('express');
+const transactionService = require('../services/transactionService');
 const Transaction = require('../models/Transaction');
-const User = require('../models/User');
 
 const postTransaction = async (req, res) => {
   const { type } = req?.params;
   const { value, description } = req?.body;
   const userid = req?.headers?.id;
-  const date = new Date();
 
   try {
-    // Validate input data against the User schema
-    const transaction = new Transaction({ userId: userid, value, type, description, date });
-    const validationResult = transaction.validateSync();
-
-    if (validationResult) {
-      const errors = validationResult.errors;
-      return res.status(422).json({ message: errors });
-    }
-
-    // Check if there is a user with the userId
-    const isUser = await User.findOne({ _id: userid }).exec();
-    if (!isUser) return res.sendStatus(404); //404
-
-    // Save the transaction instance to the database
-    await transaction.save();
-
-    return res.status(201).json({ success: `New transaction of type '${type}' created!` });
+    const result = await transactionService.createTransaction({ type, value, description, userId: userid });
+    return res.status(201).json(result);
   }
 
   catch (err) {
@@ -37,12 +20,13 @@ const getTransaction = async (req, res) => {
   const userId = req?.headers?.id;
 
   if (!userId) return res.sendStatus(400);
+
   try {
-    const transactions = await Transaction.find({ userId });
+    const transactions = await transactionService.getTransactionsByUserId(userId);
     return res.json(transactions);
   } catch (err) {
     console.error(err);
-    return res.sendStatus(500);
+    return res.status(500).json({ message: err.message });
   }
 };
 
@@ -53,19 +37,10 @@ const deleteTransaction = async (req, res) => {
   if (!userId || !transactionId) return res.sendStatus(400);
 
   try {
-    // Check if transaction exists
-    const transaction = await Transaction.findOne({ _id: transactionId, userId });
-    if (!transaction) {
-      return res.status(404).send({ message: 'Transaction not found' });
-    }
-
-    // Delete transaction
-    await Transaction.deleteOne({ _id: transactionId, userId });
-
-    return res.sendStatus(204);
+    const result = await transactionService.deleteTransaction(userId, transactionId);
+    return res.status(200).json(result);
   } catch (err) {
-    console.error(err);
-    return res.sendStatus(500);
+    return res.status(500).json({ message: err.message });
   }
 };
 
@@ -74,24 +49,21 @@ const putTransaction = async (req, res) => {
   const transactionId = req?.params?.id;
   const { value, description } = req?.body;
 
-  if (!userId || !transactionId) return res.sendStatus(400);
+  if (!userId || !transactionId) {
+    return res.sendStatus(400);
+  }
 
   try {
-    // Update transaction
-    await Transaction.findOneAndUpdate(
-      { _id: transactionId, userId },
-      { value, description },
-      { new: true, runValidators: true }
-    );
+    const updatedTransaction = await transactionService.updateTransaction({
+      transactionId,
+      userId,
+      value,
+      description,
+    });
 
-    return res.sendStatus(204);
-  } catch (err) {
-    if (err.name === 'ValidationError') {
-      return res.status(422).send({ message: err.message });
-    }
-
-    console.error(err);
-    return res.sendStatus(500);
+    return res.json(updatedTransaction);
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
   }
 };
 
