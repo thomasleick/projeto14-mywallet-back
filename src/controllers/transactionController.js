@@ -1,5 +1,4 @@
 const transactionService = require('../services/transactionService');
-const Transaction = require('../models/Transaction');
 
 const postTransaction = async (req, res) => {
   const { type } = req?.params;
@@ -23,7 +22,8 @@ const getTransaction = async (req, res) => {
 
   try {
     const transactions = await transactionService.getTransactionsByUserId(userId);
-    return res.json(transactions);
+    const sortedTransactions = transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
+    return res.json(sortedTransactions);
   } catch (err) {
     console.error(err);
     return res.status(500).json({ message: err.message });
